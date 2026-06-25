@@ -118,7 +118,7 @@ if __name__ == "__main__":
     total_faces = sum(len(v) for v in anns.values())
     print(f"  {len(anns)} images, {total_faces} faces")
 
-    thresholds = [0.03, 0.04, 0.05, 0.06, 0.08, 0.10]
+    thresholds = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20]
     print(f"\n{'Threshold':>10} {'Precision':>10} {'Recall':>10} {'F1':>10}")
     print("-"*45)
 

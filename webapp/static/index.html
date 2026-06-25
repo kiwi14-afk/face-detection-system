@@ -89,9 +89,9 @@ summary::-webkit-details-marker{display:none}
       <div>
         <div style="display:flex;justify-content:space-between;margin-bottom:4px">
           <span>置信度阈值</span>
-          <span style="font-size:12px;color:var(--text-muted);font-family:monospace" id="thr-label">0.10</span>
+          <span style="font-size:12px;color:var(--text-muted);font-family:monospace" id="thr-label">0.14</span>
         </div>
-        <input type="range" min="1" max="99" value="10" id="thr-slider"
+        <input type="range" min="1" max="99" value="14" id="thr-slider"
                oninput="document.getElementById('thr-label').textContent=(this.value/100).toFixed(2);detectIfImage()">
       </div>
 
@@ -129,14 +129,14 @@ summary::-webkit-details-marker{display:none}
         <summary>评测数据 · WIDER FACE 验证集</summary>
         <table style="width:100%;margin-top:16px;font-size:13px;border-collapse:collapse">
           <tr style="color:var(--text-subtle);font-size:11px"><th style="text-align:left;padding:4px 8px;font-weight:400">阈值</th><th style="text-align:right;padding:4px 8px;font-weight:400">F1</th><th style="text-align:right;padding:4px 8px;font-weight:400">Precision 精确率</th><th style="text-align:right;padding:4px 8px;font-weight:400">Recall 召回率</th></tr>
-          <tr><td style="padding:4px 8px">0.03</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.062</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.033</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.611</td></tr>
-          <tr><td style="padding:4px 8px">0.04</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.088</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.048</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.596</td></tr>
-          <tr><td style="padding:4px 8px">0.05</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.117</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.065</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.579</td></tr>
-          <tr><td style="padding:4px 8px">0.06</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.150</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.087</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.560</td></tr>
-          <tr><td style="padding:4px 8px">0.08</td><td style="text-align:right;font-family:monospace;padding:4px 8px;color:var(--brand)">0.230</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.148</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.518</td></tr>
-          <tr><td style="padding:4px 8px;font-weight:600">0.10</td><td style="text-align:right;font-family:monospace;font-weight:600;padding:4px 8px;color:var(--brand)">0.316</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.237</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.473</td></tr>
+          <tr><td style="padding:4px 8px">0.10</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.237</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.473</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.316</td></tr>
+          <tr><td style="padding:4px 8px">0.12</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.362</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.420</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.389</td></tr>
+          <tr><td style="padding:4px 8px;font-weight:600">0.14</td><td style="text-align:right;font-family:monospace;font-weight:600;padding:4px 8px;color:var(--brand)">0.520</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.361</td><td style="text-align:right;font-family:monospace;font-weight:600;padding:4px 8px;color:var(--brand)">0.426</td></tr>
+          <tr><td style="padding:4px 8px">0.16</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.668</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.268</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.382</td></tr>
+          <tr><td style="padding:4px 8px">0.18</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.806</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.183</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.299</td></tr>
+          <tr><td style="padding:4px 8px">0.20</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.898</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.095</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.171</td></tr>
         </table>
-        <p style="color:var(--text-muted);font-size:12px;margin-top:12px">WIDER FACE val 3,226 imgs · YuNet 75K params · Trained on 10,304 preprocessed images · Best F1=0.316</p>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:12px">WIDER FACE val 3,226 imgs · YuNet 75K params · Trained on 10,304 preprocessed images · Best F1=0.426 @ thr=0.14</p>
       </details>
     </div>
   </div>

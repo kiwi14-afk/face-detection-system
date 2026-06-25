@@ -127,7 +127,7 @@ def match_detections(dets_a, dets_b, iou_thr=0.3):
 async def detect(
     image: UploadFile = File(...),
     preprocess: bool = Form(True),
-    threshold: float = Form(0.10),
+    threshold: float = Form(0.14),
 ):
     t0 = time.perf_counter()
     contents = await image.read()
