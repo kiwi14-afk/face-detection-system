@@ -1,0 +1,23 @@
+# WIDER FACE 数据集图片和压缩包
+preprocessing/3226_all/
+training/data/WIDER_train/
+training/data/WIDER_train_processed/
+training/data/*.zip
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 模型权重（除final外）
+training/outputs/**/epoch_*.pth
+training/outputs/**/best_model.pth
+training/outputs/**/*.onnx
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

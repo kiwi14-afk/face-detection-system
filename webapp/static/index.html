@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>人脸检测实验室</title>
+<style>
+:root {
+  --brand:#2563eb;--bg:#fff;--bg-card:#fafafa;--bg-hover:#f4f4f5;
+  --border:#e4e4e7;--text:#18181b;--text-muted:#71717a;--text-subtle:#a1a1aa;
+  --radius:10px;--shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 12px rgba(0,0,0,.06);
+}
+.dark {
+  --brand:#3b82f6;--bg:#09090b;--bg-card:#18181b;--bg-hover:#27272a;
+  --border:#27272a;--text:#fafafa;--text-muted:#a1a1aa;--text-subtle:#52525b;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.2);--shadow-md:0 4px 12px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.5}
+button{cursor:pointer;font-family:inherit}
+input,select{font-family:inherit}
+img{max-width:100%}
+
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm)}
+.btn{height:40px;padding:0 24px;border-radius:var(--radius);font-size:14px;font-weight:500;border:1px solid var(--border);background:var(--bg-card);color:var(--text);transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn-primary:hover{opacity:.9}
+.btn-secondary:hover{background:var(--bg-hover)}
+
+input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:3px;background:var(--border);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:9px;background:var(--brand);cursor:pointer;border:2px solid var(--bg)}
+select{height:40px;padding:0 12px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none}
+select:focus{outline:2px solid var(--brand);outline-offset:-1px}
+
+.toggle{width:44px;height:24px;background:var(--border);border-radius:12px;position:relative;cursor:pointer;transition:background .15s;border:0;display:inline-block}
+.toggle.on{background:var(--brand)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:10px;background:#fff;transition:transform .15s}
+.toggle.on::after{transform:translateX(20px)}
+
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s;text-align:center}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--brand)}
+
+.canvas-wrap{width:100%;aspect-ratio:4/3;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.canvas-wrap canvas{max-width:100%;max-height:100%;object-fit:contain}
+
+.conf-bar{height:16px;border-radius:4px;background:var(--bg-hover);overflow:hidden}
+.conf-bar-fill{height:100%;background:var(--brand);border-radius:4px;transition:width .3s}
+
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:500;background:var(--bg-hover);color:var(--text-muted)}
+summary{cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);list-style:none}
+summary::-webkit-details-marker{display:none}
+
+.spin{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div style="max-width:1200px;margin:0 auto;padding:24px">
+
+<!-- header -->
+<div class="card" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <h1 style="font-size:18px;font-weight:600">人脸检测实验室</h1>
+    <span class="badge">数字图像处理课程作品</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="badge">YuNet · 10K 训练</span>
+    <button id="theme-btn" onclick="toggleTheme()" class="btn" style="width:36px;padding:0;justify-content:center;font-size:16px">☾</button>
+  </div>
+</div>
+
+<!-- main -->
+<div style="display:flex;gap:16px">
+  <!-- left: upload card -->
+  <div class="card" style="width:360px;flex-shrink:0">
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+      <div>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--text-subtle)" stroke-width="1.5" style="margin:0 auto 8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <p style="color:var(--text-muted)">拖拽或点击上传照片</p>
+        <p style="color:var(--text-subtle);font-size:12px;margin-top:4px">JPG / PNG</p>
+      </div>
+    </div>
+    <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
+
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:16px">
+      <label style="display:flex;align-items:center;justify-content:space-between;cursor:pointer">
+        <span>预处理增强</span>
+        <span class="toggle on" id="prep-toggle" onclick="this.classList.toggle('on');detectIfImage()"></span>
+      </label>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span>置信度阈值</span>
+          <span style="font-size:12px;color:var(--text-muted);font-family:monospace" id="thr-label">0.10</span>
+        </div>
+        <input type="range" min="1" max="99" value="10" id="thr-slider"
+               oninput="document.getElementById('thr-label').textContent=(this.value/100).toFixed(2);detectIfImage()">
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="runDetect()">检测</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- right: results -->
+  <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+    <div class="card" style="flex:1">
+      <div style="display:flex;gap:16px">
+        <div style="flex:1">
+          <p style="font-size:12px;color:var(--text-subtle);margin-bottom:8px">原始图</p>
+          <div class="canvas-wrap"><canvas id="canvas-main"></canvas></div>
+        </div>
+        <div style="flex:1">
+          <p style="font-size:12px;color:var(--text-subtle);margin-bottom:8px">预处理后</p>
+          <div class="canvas-wrap"><canvas id="canvas-compare"></canvas></div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:32px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <div><span style="font-size:11px;color:var(--text-subtle)">人脸</span><br><span style="font-size:24px;font-weight:600;color:var(--text)" id="stat-count">—</span></div>
+        <div><span style="font-size:11px;color:var(--text-subtle)">耗时</span><br><span style="font-size:14px;color:var(--text-muted);font-family:monospace" id="stat-time">—</span></div>
+        <div><span style="font-size:11px;color:var(--text-subtle)">预处理</span><br><span style="font-size:14px;font-weight:500" id="stat-prep">—</span></div>
+      </div>
+      <div id="conf-bars" style="margin-top:12px"></div>
+    </div>
+
+    <!-- metrics -->
+    <div class="card">
+      <details>
+        <summary>评测数据 · WIDER FACE 验证集</summary>
+        <table style="width:100%;margin-top:16px;font-size:13px;border-collapse:collapse">
+          <tr style="color:var(--text-subtle);font-size:11px"><th style="text-align:left;padding:4px 8px;font-weight:400">阈值</th><th style="text-align:right;padding:4px 8px;font-weight:400">F1</th><th style="text-align:right;padding:4px 8px;font-weight:400">Precision 精确率</th><th style="text-align:right;padding:4px 8px;font-weight:400">Recall 召回率</th></tr>
+          <tr><td style="padding:4px 8px">0.03</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.062</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.033</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.611</td></tr>
+          <tr><td style="padding:4px 8px">0.04</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.088</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.048</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.596</td></tr>
+          <tr><td style="padding:4px 8px">0.05</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.117</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.065</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.579</td></tr>
+          <tr><td style="padding:4px 8px">0.06</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.150</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.087</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.560</td></tr>
+          <tr><td style="padding:4px 8px">0.08</td><td style="text-align:right;font-family:monospace;padding:4px 8px;color:var(--brand)">0.230</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.148</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.518</td></tr>
+          <tr><td style="padding:4px 8px;font-weight:600">0.10</td><td style="text-align:right;font-family:monospace;font-weight:600;padding:4px 8px;color:var(--brand)">0.316</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.237</td><td style="text-align:right;font-family:monospace;padding:4px 8px">0.473</td></tr>
+        </table>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:12px">WIDER FACE val 3,226 imgs · YuNet 75K params · Trained on 10,304 preprocessed images · Best F1=0.316</p>
+      </details>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+let currentImage = null, currentData = null;
+
+function toggleTheme() {
+  document.documentElement.classList.toggle('dark');
+  document.getElementById('theme-btn').textContent = document.documentElement.classList.contains('dark') ? '☾' : '☀';
+}
+
+function handleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => { currentImage = img; runDetect(); };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function getParams() {
+  return {
+    preprocess: document.getElementById('prep-toggle').classList.contains('on'),
+    threshold: parseFloat(document.getElementById('thr-label').textContent),
+  };
+}
+
+function detectIfImage() {
+  if (currentImage) runDetect();
+}
+
+async function runDetect() {
+  if (!currentImage) return;
+
+  const form = new FormData();
+  const blob = await fetch(currentImage.src).then(r => r.blob());
+  form.append('image', blob, 'image.jpg');
+  const p = getParams();
+  form.append('preprocess', p.preprocess);
+  form.append('threshold', p.threshold);
+
+  const res = await fetch('/api/detect', { method: 'POST', body: form });
+  const data = await res.json();
+  currentData = data;
+
+  drawCanvas('canvas-main', currentImage, data.detections_orig);
+  if (data.proc_image) {
+    const procImg = new Image();
+    procImg.onload = () => drawCanvas('canvas-compare', procImg, data.detections_proc);
+    procImg.src = data.proc_image;
+  } else {
+    drawCanvas('canvas-compare', currentImage, data.detections_proc);
+  }
+  updateStats(data);
+  updateBars(data.detections_orig, data.conf_comparison);
+}
+
+function drawCanvas(id, img, dets) {
+  const canvas = document.getElementById(id);
+  const ctx = canvas.getContext('2d');
+  const wrap = canvas.parentElement;
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const scale = Math.min(W / img.width, H / img.height, 1);
+  canvas.width = img.width * scale;
+  canvas.height = img.height * scale;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+  for (const d of dets) {
+    const [x, y, w, h] = d.bbox.map(v => v * scale);
+    const c = d.conf;
+    const color = c >= 0.8 ? '#38bdf8' : c >= 0.6 ? '#fbbf24' : '#f87171';
+    ctx.strokeStyle = color; ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = color;
+    const lbl = c.toFixed(2);
+    const m = ctx.measureText(lbl);
+    ctx.fillRect(x, y - 18, m.width + 8, 18);
+    ctx.fillStyle = '#000'; ctx.font = '11px monospace';
+    ctx.fillText(lbl, x + 4, y - 5);
+  }
+}
+
+function updateStats(data) {
+  const prep = document.getElementById('prep-toggle').classList.contains('on');
+  const origN = data.detections_orig.length;
+  const procN = data.detections_proc.length;
+  if (prep && data.conf_comparison) {
+    document.getElementById('stat-count').textContent = origN + ' / ' + procN;
+    document.getElementById('stat-count').title = '原始 / 预处理';
+  } else {
+    document.getElementById('stat-count').textContent = origN;
+    document.getElementById('stat-count').title = '';
+  }
+  document.getElementById('stat-time').textContent = data.time_orig_ms.toFixed(0) + 'ms';
+  document.getElementById('stat-prep').textContent = prep ? '开' : '关';
+  document.getElementById('stat-prep').style.color = prep ? 'var(--brand)' : 'var(--text-subtle)';
+}
+
+function updateBars(dets, comparison) {
+  const el = document.getElementById('conf-bars');
+  if (comparison) {
+    if (!comparison.length) { el.innerHTML = '<p style="color:var(--text-subtle);font-size:13px">没有检测到人脸</p>'; return; }
+    const up = comparison.filter(c => c.status === 'up').length;
+    const down = comparison.filter(c => c.status === 'down').length;
+    const same = comparison.filter(c => c.status === 'same').length;
+    const lost = comparison.filter(c => c.status === 'lost').length;
+    const news = comparison.filter(c => c.status === 'new').length;
+    let summary = [];
+    if (up) summary.push(`<span style="color:#22c55e">${up}↑</span>`);
+    if (down) summary.push(`<span style="color:#ef4444">${down}↓</span>`);
+    if (same) summary.push(`<span>${same}≈</span>`);
+    if (lost) summary.push(`<span style="color:var(--text-subtle)">${lost}消失</span>`);
+    if (news) summary.push(`<span style="color:#f59e0b">${news}新增</span>`);
+    el.innerHTML = `<p style="font-size:12px;margin-bottom:6px;color:var(--text);display:flex;gap:10px">预处理前后对比：${summary.join(' ')}</p>`
+      + comparison.slice(0, 12).map((c, i) => {
+        const o = c.orig_conf, p = c.proc_conf;
+        const isUp = c.status === 'up', isDown = c.status === 'down';
+        const isNew = c.status === 'new', isLost = c.status === 'lost';
+        const diffStr = c.diff != null ? (c.diff >= 0 ? `+${c.diff.toFixed(2)}` : c.diff.toFixed(2)) : '';
+        const arrow = isUp ? '↑' : isDown ? '↓' : isNew ? '＋' : isLost ? '✕' : '≈';
+        const clr = isUp ? '#22c55e' : isDown ? '#ef4444' : isNew ? '#f59e0b' : isLost ? 'var(--text-subtle)' : 'var(--text-muted)';
+        if (isLost) {
+          return `<div style="display:flex;align-items:center;gap:6px;margin:3px 0">
+            <span style="font-family:monospace;font-size:10px;color:var(--text-subtle);width:16px">#${i+1}</span>
+            <div class="conf-bar" style="flex:1"><div class="conf-bar-fill" style="width:${o*100}%;background:var(--brand);opacity:0.4"></div></div>
+            <span style="font-family:monospace;font-size:11px;width:36px;text-align:right;opacity:0.6">${o.toFixed(2)}</span>
+            <span style="font-size:11px;width:28px;text-align:center;opacity:0.4">—</span>
+            <span style="font-size:11px;width:44px;text-align:right;color:${clr}">${arrow} 消失</span>
+          </div>`;
+        }
+        if (isNew) {
+          return `<div style="display:flex;align-items:center;gap:6px;margin:3px 0">
+            <span style="font-family:monospace;font-size:10px;color:var(--text-subtle);width:16px">#${i+1}</span>
+            <div class="conf-bar" style="flex:1"><div class="conf-bar-fill" style="width:${p*100}%;background:#f59e0b;opacity:0.5"></div></div>
+            <span style="font-size:11px;width:36px;text-align:right;opacity:0.4">—</span>
+            <span style="font-family:monospace;font-size:11px;font-weight:600;width:36px;text-align:right;color:#f59e0b">${p.toFixed(2)}</span>
+            <span style="font-size:11px;width:44px;text-align:right;color:${clr}">${arrow} 新增</span>
+          </div>`;
+        }
+        return `<div style="display:flex;align-items:center;gap:6px;margin:3px 0">
+          <span style="font-family:monospace;font-size:10px;color:var(--text-subtle);width:16px">#${i+1}</span>
+          <div class="conf-bar" style="flex:1"><div class="conf-bar-fill" style="width:${o*100}%;background:var(--brand)"></div></div>
+          <span style="font-family:monospace;font-size:11px;width:36px;text-align:right">${o.toFixed(2)}</span>
+          <span style="font-size:11px;width:10px;text-align:center;color:var(--text-subtle)">→</span>
+          <div class="conf-bar" style="flex:1"><div class="conf-bar-fill" style="width:${p*100}%;background:#f59e0b"></div></div>
+          <span style="font-family:monospace;font-size:11px;font-weight:600;width:36px;text-align:right">${p.toFixed(2)}</span>
+          <span style="font-size:11px;width:48px;text-align:right;color:${clr}">${arrow} ${diffStr}</span>
+        </div>`;
+      }).join('');
+    return;
+  }
+  // single-bar fallback
+  if (!dets.length) { el.innerHTML = '<p style="color:var(--text-subtle);font-size:13px">没有检测到人脸</p>'; return; }
+  el.innerHTML = dets.slice(0, 10).map((d, i) => `
+    <div style="display:flex;align-items:center;gap:8px;margin:3px 0">
+      <span style="font-family:monospace;font-size:10px;color:var(--text-subtle);width:16px">#${i+1}</span>
+      <div class="conf-bar" style="flex:1">
+        <div class="conf-bar-fill" style="width:${d.conf*100}%"></div>
+      </div>
+      <span style="font-family:monospace;font-size:12px;font-weight:600;width:40px;text-align:right">${d.conf.toFixed(2)}</span>
+    </div>
+  `).join('');
+}
+
+// drag & drop
+const zone = document.getElementById('upload-zone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "data_dir": "C:\\Users\\Admin\\Desktop\\\u5927\u4e09\u4e0b\\\u6570\u5b57\u56fe\u50cf\u5904\u7406\\face-detection-system-main\\training\\data\\WIDER_train_processed\\images",
+  "ann_file": "C:\\Users\\Admin\\Desktop\\\u5927\u4e09\u4e0b\\\u6570\u5b57\u56fe\u50cf\u5904\u7406\\face-detection-system-main\\training\\data\\splits_full\\train_annotations.txt",
+  "output_dir": "C:\\Users\\Admin\\Desktop\\\u5927\u4e09\u4e0b\\\u6570\u5b57\u56fe\u50cf\u5904\u7406\\face-detection-system-main\\training\\outputs\\model_full",
+  "batch_size": 16,
+  "epochs": 100,
+  "lr": 0.01,
+  "momentum": 0.9,
+  "weight_decay": 0.0005,
+  "input_size": [
+    640,
+    640
+  ],
+  "num_workers": 0,
+  "resume": null,
+  "val_ann": "C:\\Users\\Admin\\Desktop\\\u5927\u4e09\u4e0b\\\u6570\u5b57\u56fe\u50cf\u5904\u7406\\face-detection-system-main\\training\\data\\splits_full\\val_annotations.txt",
+  "val_dir": "C:\\Users\\Admin\\Desktop\\\u5927\u4e09\u4e0b\\\u6570\u5b57\u56fe\u50cf\u5904\u7406\\face-detection-system-main\\training\\data\\WIDER_train_processed\\images",
+  "use_kps": true,
+  "no_kps": true,
+  "log_interval": 50,
+  "save_interval": 20,
+  "warmup_epochs": 5
+}
